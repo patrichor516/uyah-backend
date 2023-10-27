@@ -50,8 +50,8 @@ class BooksController extends Controller
         $newRecord->save();
 
         // Ambil penulis dari request dan sambungkan dengan buku.
-        $authorNames = (is_array($request->input('name_author'))) ? $request->input('name_author') : [$request->input('name_author')];
-        $authorAddresses = (is_array($request->input('address'))) ? $request->input('address') : [$request->input('address')];// Ambil alamat dari request
+      $authorNames = (is_array($request->input('name_author'))) ? $request->input('name_author') : [$request->input('name_author')];
+    $authorAddresses = (is_array($request->input('address'))) ? $request->input('address') : [$request->input('address')];// Ambil alamat dari request
        
         foreach ($authorNames as $key => $authorName) {
             $author = Author::firstOrCreate(['name_author' => $authorName, 'address' => $authorAddresses[$key]]); // Simpan alamat penulis
@@ -82,44 +82,41 @@ class BooksController extends Controller
     {
         $validatedData = $request->validate([
             'name_book' => 'required',
-            'name_category' => 'required', // Ubah ke 'name_category'
-            'name_author' => 'required|array', // Pastikan ini array
-            'address' => 'required', // Validasi untuk alamat
+            'name_category' => 'required', // Ubah ke 'name_category' jika perlu
+            'name_author' => 'array', // Validasi array
+            'address' => 'array', // Validasi array
         ]);
-
+    
         $record = Books::find($id);
-
-
+    
         if (!$record) {
             return response()->json([
                 'status' => false,
                 'message' => 'Data not found'
             ], 404);
         }
-
+    
         // Cari kategori berdasarkan "name_category" dari request.
         $category = Category::firstOrCreate(['name_category' => $request->input('name_category')]);
-
-        $author = Author::firstOrCreate(['name_author' => $request->input('name_author')]);
-
-        // Periksa validas\i data sebelum mengubah data.
-        $record->isbn = $request->input('isbn');
+    
+        // Periksa validasi data sebelum mengubah data.
         $record->name_book = $request->input('name_book');
-
+    
         // Sambungkan buku dengan kategori yang sesuai dan gantikan kategori sebelumnya.
         $record->category()->associate($category);
-
+    
         $record->save();
-
-        $authorNames = $request->input('name_author');
-        $authorAddresses = $request->input('address'); // Ambil alamat dari request
+    
+        $authorNames = $request->input('name_author', []);
+        $authorAddresses = $request->input('address', []);
+    
+        // Hapus penulis yang sudah terhubung dan tambahkan yang baru
+        $record->author()->detach();
         foreach ($authorNames as $key => $authorName) {
-            $author = Author::firstOrCreate(['name_author' => $authorName, 'address' => $authorAddresses[$key]]); // Simpan alamat penulis
+            $author = Author::firstOrCreate(['name_author' => $authorName, 'address' => $authorAddresses[$key]]);
             $record->author()->attach($author);
         }
-
-
-        $record->author()->attach($author);
+    
         return response()->json([
             'status' => true,
             'message' => 'Data successfully updated',
