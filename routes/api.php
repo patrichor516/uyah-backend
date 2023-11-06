@@ -3,6 +3,8 @@
 use App\Http\Controllers\api\AuthorController;
 use App\Http\Controllers\Api\BooksController;
 use App\Http\Controllers\api\CategoryController;
+use App\Http\Controllers\Api\LoginController;
+use App\Http\Controllers\Api\LogoutController;
 use App\Http\Controllers\TestingController;
 use App\Models\Category;
 use Illuminate\Http\Request;
@@ -39,3 +41,11 @@ Route::get('author', [AuthorController::class, 'index']);
 Route::get('author', [AuthorController::class, 'index']);
 
 Route::get('testing', [TestingController::class, 'index']);
+
+Route::post('login', [LoginController::class, '__invoke']);
+Route::post('logout', [LogoutController::class, '__invoke']);
+
+
+Route::middleware('auth:api')->get('datauser', function (Request $request) {
+    return $request->user();
+});
