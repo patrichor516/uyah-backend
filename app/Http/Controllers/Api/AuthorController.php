@@ -13,10 +13,7 @@ class AuthorController extends Controller
      */
     public function index()
     {
-        $data = Author::orderBy('name_author')
-            ->orderBy('address')
-            ->get();
-    
+        $data = Author::all();
         return response()->json([
             'status' => true,
             'message' => 'data successfully',
@@ -72,7 +69,7 @@ class AuthorController extends Controller
 
 
         $record->name_author = $request->input('name_author');
-        $record->nationality = $request->input('address');
+        $record->address = $request->input('address');
 
         $record->save();
 

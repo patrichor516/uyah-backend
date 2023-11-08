@@ -32,11 +32,11 @@ Route::delete('books/delete/{id}', [BooksController::class, 'destroy']);
 
 Route::get('author', [AuthorController::class, 'index']);
 Route::post('author/create', [AuthorController::class, 'store']);
-Route::get('author', [AuthorController::class, 'update']);
+Route::put('author/update/{id}', [AuthorController::class, 'update']);
 Route::get('author', [AuthorController::class, 'destroy']);
 
 Route::get('category',[CategoryController::class, 'index']);
-Route::get('author', [AuthorController::class, 'index']);
+Route::post('category/create', [CategoryController::class, 'store']);
 Route::get('author', [AuthorController::class, 'index']);
 Route::get('author', [AuthorController::class, 'index']);
 

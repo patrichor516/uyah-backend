@@ -13,8 +13,7 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        $data = Category::orderBy('name_category')
-            ->get();
+        $data = Category::all();
     
         return response()->json([
             'status' => true,
@@ -36,7 +35,16 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $newData = new Category();
+        $newData->name_category = $request->input('name_category');
+
+        $newData->save();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'yeyy',
+            'data' => $newData
+        ]);
     }
 
     /**
