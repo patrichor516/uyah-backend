@@ -52,7 +52,21 @@ class CategoryController extends Controller
      */
     public function show(string $id)
     {
-        //
+        try {
+            $category = Category::findOrFail($id);
+    
+            return response()->json([
+                'status' => true,
+                'message' => 'Data berhasil diperoleh',
+                'data' => $category
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Data tidak ditemukan',
+                'error' => $e->getMessage()
+            ], 404);
+        }
     }
 
     /**
@@ -68,14 +82,36 @@ class CategoryController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $validateData = $request->validate([
+            'name_category' => 'required',
+        ]);
+
+        $record = Category::findOrFail($id);
+
+        $record->name_category = $request->input('name_category');
+
+        $record->save();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Data updated successfully',
+            'data' => $record
+        ], 200);
     }
+    
 
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(string $id)
     {
-        //
+        $category = Category::findOrFail($id);
+        $category->delete();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Data deleted successfully',
+            'data' => $category
+        ], 200);
     }
 }

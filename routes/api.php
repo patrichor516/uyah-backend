@@ -6,6 +6,7 @@ use App\Http\Controllers\api\CategoryController;
 use App\Http\Controllers\Api\LoginController;
 use App\Http\Controllers\Api\LogoutController;
 use App\Http\Controllers\TestingController;
+use App\Models\Author;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -25,20 +26,25 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('books', [BooksController::class, 'index']);
-Route::post('books/create', [BooksController::class, 'store']);
+Route::get('books/all', [BooksController::class, 'index']);
+Route::get('books/{id}', [BooksController::class, 'show']);
+Route::get('books', [BooksController::class, 'book']);
+Route::post('books/create', [BooksController::class, 'create']);
+Route::post('books/create/all', [BooksController::class, 'store']);
 Route::put('books/update/{id}', [BooksController::class, 'update']);
 Route::delete('books/delete/{id}', [BooksController::class, 'destroy']);
 
 Route::get('author', [AuthorController::class, 'index']);
+Route::get('author/{id}', [AuthorController::class, 'show']);
 Route::post('author/create', [AuthorController::class, 'store']);
 Route::put('author/update/{id}', [AuthorController::class, 'update']);
-Route::get('author', [AuthorController::class, 'destroy']);
+Route::delete('author/delete/{id}', [AuthorController::class, 'destroy']);
 
 Route::get('category',[CategoryController::class, 'index']);
+Route::get('category/{id}',[CategoryController::class, 'show']);
 Route::post('category/create', [CategoryController::class, 'store']);
-Route::get('author', [AuthorController::class, 'index']);
-Route::get('author', [AuthorController::class, 'index']);
+Route::put('category/update/{id}', [CategoryController::class, 'update']);
+Route::delete('category/delete/{id}', [CategoryController::class, 'destroy']);
 
 Route::get('testing', [TestingController::class, 'index']);
 

@@ -25,6 +25,16 @@ class BooksController extends Controller
             'data' => $data
         ], 200);
     }
+
+    public function book()
+    {
+        $data = Books::all();
+        return response()->json([
+            'status' => true,
+            'message' => 'Data berhasil diperoleh',
+            'data' => $data
+        ], 200);
+    }
     /**
      * Store a newly created resource in storage.
      */
@@ -72,57 +82,71 @@ class BooksController extends Controller
      */
     public function show(string $id)
     {
-        //
+        try {
+            $book = Books::with('category', 'author')->findOrFail($id);
+    
+            return response()->json([
+                'status' => true,
+                'message' => 'Data berhasil diperoleh',
+                'data' => $book
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Data tidak ditemukan',
+                'error' => $e->getMessage()
+            ], 404);
+        }
     }
 
     /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, string $id)
-    {
-        $validatedData = $request->validate([
-            'name_book' => 'required',
-            'name_category' => 'required', // Ubah ke 'name_category' jika perlu
-            'name_author' => 'array', // Validasi array
-            'address' => 'array', // Validasi array
-        ]);
-    
-        $record = Books::find($id);
-    
-        if (!$record) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Data not found'
-            ], 404);
-        }
-    
-        // Cari kategori berdasarkan "name_category" dari request.
-        $category = Category::firstOrCreate(['name_category' => $request->input('name_category')]);
-    
-        // Periksa validasi data sebelum mengubah data.
-        $record->name_book = $request->input('name_book');
-    
-        // Sambungkan buku dengan kategori yang sesuai dan gantikan kategori sebelumnya.
-        $record->category()->associate($category);
-    
-        $record->save();
-    
-        $authorNames = $request->input('name_author', []);
-        $authorAddresses = $request->input('address', []);
-    
-        // Hapus penulis yang sudah terhubung dan tambahkan yang baru
-        $record->author()->detach();
-        foreach ($authorNames as $key => $authorName) {
-            $author = Author::firstOrCreate(['name_author' => $authorName, 'address' => $authorAddresses[$key]]);
-            $record->author()->attach($author);
-        }
-    
+{
+    $validatedData = $request->validate([
+        'name_book' => 'required',
+        'category_id' => 'required',
+        'author_id' => 'array',
+    ]);
+
+    $record = Books::find($id);
+
+    if (!$record) {
         return response()->json([
-            'status' => true,
-            'message' => 'Data successfully updated',
-            'data' => $record->load('author')
-        ], 200);
+            'status' => false,
+            'message' => 'Data not found'
+        ], 404);
     }
+
+    $record->name_book = $request->input('name_book');
+    $record->category_id = $request->input('category_id');
+    $record->save();
+
+    // Detach penulis hanya jika ada data author_id yang dikirimkan
+    if ($request->has('author_id')) {
+        $record->author()->detach();
+
+        $authorIds = $request->input('author_id');
+        foreach ($authorIds as $key => $authorId) {
+            $author = Author::find($authorId);
+
+            if (!$author) {
+                $author = new Author();
+                $author->name_author = "Nama Penulis Baru";
+                $author->save();
+            }
+            $record->author()->attach($author->id);
+        }
+    }
+
+    return response()->json([
+        'status' => true,
+        'message' => 'Data successfully updated',
+        'data' => $record->load('author')
+    ], 200);
+}
+
 
     /**
      * Remove the specified resource from storage.
@@ -130,18 +154,60 @@ class BooksController extends Controller
     public function destroy(string $id)
     {
         $record = Books::find($id);
-
+    
         if (!$record) {
             return response()->json([
                 'status' => false,
                 'message' => 'data not found'
             ], 404);
         }
-
+    
+        // Delete related records in the pivot table (book_author)
+        $record->author()->detach();
+    
+        // Now, delete the book record
         $record->delete();
+    
         return response()->json([
             'status' => true,
-            'message' => 'data  delete'
+            'message' => 'data delete'
         ], 200);
     }
+
+    public function create(Request $request)
+{
+    $validatedData = $request->validate([
+        'name_book' => 'required',
+        'category_id' => 'required',
+        'author_id' => 'required|array', // Perbarui validasi ini
+    ]);
+
+    // Buat instance baru dari model Books.
+    $newRecord = new Books();
+    $newRecord->name_book = $request->input('name_book');
+    $newRecord->category_id = $request->input('category_id');
+    $newRecord->save();        
+
+    $authorIds = $request->input('author_id');
+    foreach ($authorIds as $key => $authorId) {
+        $author = Author::find($authorId);
+
+        if (!$author) {
+            // Jika penulis tidak ditemukan, buat instance baru
+            $author = new Author();
+            // Tentukan kolom yang harus diisi
+            $author->name_author = "Nama Penulis Baru"; // Sesuaikan dengan kolom di tabel Author
+            $author->save();
+        }
+
+        // Tambahkan penulis ke buku
+        $newRecord->author()->attach($author->id);
+    }
+
+    return response()->json([
+        'status' => true,
+        'message' => 'Data berhasil ditambahkan',
+        'data' => $newRecord->load('author')
+    ], 200);
+}
 }

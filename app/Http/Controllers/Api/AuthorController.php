@@ -45,7 +45,21 @@ class AuthorController extends Controller
      */
     public function show(string $id)
     {
-        //
+        try {
+            $author = Author::findOrFail($id);
+    
+            return response()->json([
+                'status' => true,
+                'message' => 'Data berhasil diperoleh',
+                'data' => $author
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Data tidak ditemukan',
+                'error' => $e->getMessage()
+            ], 404);
+        }
     }
 
     /**
@@ -58,15 +72,7 @@ class AuthorController extends Controller
             'address' => 'required',
         ]);
 
-        $record = Author::find($id);
-
-        if (!$record) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Data not found'
-            ],404);
-        }
-
+        $record = Author::findOrFail($id);
 
         $record->name_author = $request->input('name_author');
         $record->address = $request->input('address');
@@ -75,9 +81,9 @@ class AuthorController extends Controller
 
         return response()->json([
             'status' => true,
-            'message' => 'data update successfully',
-            'date' => $record
-        ],200);
+            'message' => 'Data updated successfully',
+            'data' => $record
+        ], 200);
     }
 
     /**
@@ -85,19 +91,13 @@ class AuthorController extends Controller
      */
     public function destroy(string $id)
     {
-        $record = Author::find($id);
-        
-        if (!$record) {
-            return response()->json([
-                'status' => false,
-                'message' => 'data not found'
-            ],404);
-        }
+        $author = Author::findOrFail($id);
+        $author->delete();
 
-        $record->delete();
         return response()->json([
             'status' => true,
-            'message' => 'data is delete'
+            'message' => 'Data deleted successfully',
+            'data' => $author
         ], 200);
-    }
+}
 }
