@@ -15,12 +15,16 @@ class User extends Authenticatable implements JWTSubject
     protected $table = 'users';
 
     protected $fillable = [
-        'name',
-        'email',
-        'address',
-        'password',
-        'status',
-        'role_id'
+        'kode_user',
+        'nis',
+        'fullname',
+        'username',
+        'kelas',
+        'alamat',
+        'verif',
+        'join_date',
+        'terakhir_login'
+
     ];
 
     protected $hidden = [

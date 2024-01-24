@@ -6,18 +6,19 @@ use App\Http\Controllers\Controller;
 use App\Models\Author;
 use App\Models\Books;
 use App\Models\Category;
+use App\Models\Peminjaman;
 use Illuminate\Http\Request;
 use Symfony\Component\Console\Input\Input;
 
-class BooksController extends Controller
+class PeminjamanController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $data = Books::all();
-        $data = Books::with('category', 'author')->get();
+        $data = Peminjaman::all(); // Use 'books' instead of 'Books'
+        $data = Peminjaman::with('books')->get();
         return response()->json([
             'status' => true,
             'message' => 'Data berhasil diperoleh',
@@ -25,55 +26,32 @@ class BooksController extends Controller
         ], 200);
     }
 
-    public function book()
-    {
-        $data = Books::all();
-        return response()->json([
-            'status' => true,
-            'message' => 'Data berhasil diperoleh',
-            'data' => $data
-        ], 200);
-    }
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
-        $validatedData = $request->validate([
-            'name_book' => 'required',
-            'name_category' => 'required',
-            'name_author' => 'required', // Pastikan ini array
-            'address' => 'required', // Validasi untuk alamat
-        ]);
+        $buku = Books::firstOrCreate(['judul_buku' => $request->input('judul_buku')]);
 
-        // Cari kategori berdasarkan "name_category" dari request.
-        $category = Category::firstOrCreate(['name_category' => $request->input('name_category')]);
+        $newRecord = new Peminjaman();
+        $newRecord->nama_anggota = $request->input('nama_anggota');
+        $newRecord->tanggal_peminjaman = $request->input('tanggal_peminjaman');
+        $newRecord->tanggal_pengembalian = $request->input('tanggal_pengembalian');
+        $newRecord->kondisi_buku_saat_dipinjam = $request->input('kondisi_buku_saat_dipinjam');
+        $newRecord->kondisi_buku_saat_dikembalikan = $request->input('kondisi_buku_saat_dikembalikan');
+        $newRecord->denda = $request->input('denda');
 
-        // Buat instance baru dari model Books.
-        $newRecord = new Books();
-        $newRecord->name_book = $request->input('name_book');
-
-        // Sambungkan buku dengan kategori yang sesuai.
-        $newRecord->category()->associate($category);
+        // Set the foreign key value directly
+        $newRecord->judul_buku_id = $buku->id;
 
         $newRecord->save();
-
-        // Ambil penulis dari request dan sambungkan dengan buku.
-        $authorNames = (is_array($request->input('name_author'))) ? $request->input('name_author') : [$request->input('name_author')];
-        $authorAddresses = (is_array($request->input('address'))) ? $request->input('address') : [$request->input('address')]; // Ambil alamat dari request
-
-        foreach ($authorNames as $key => $authorName) {
-            $author = Author::firstOrCreate(['name_author' => $authorName, 'address' => $authorAddresses[$key]]); // Simpan alamat penulis
-            $newRecord->author()->attach($author);
-        }
 
         return response()->json([
             'status' => true,
             'message' => 'Data berhasil ditambahkan',
-            'data' => $newRecord->load('author') // Memuat relasi penulis (authors) dalam data yang ditampilkan
+            'data' => $newRecord
         ], 200);
     }
-
 
 
     /**
@@ -176,23 +154,22 @@ class BooksController extends Controller
     public function create(Request $request)
     {
 
-
         // Buat instance baru dari model Books.
-        $newRecord = new Books();
-        $newRecord->category_id = $request->input('category_id');
-        $newRecord->penerbit_buku_id = $request->input('penerbit_buku_id');
-        $newRecord->judul_buku = $request->input('judul_buku');
-        $newRecord->pengarang = $request->input('pengarang');
-        $newRecord->tahun_terbit = $request->input('tahun_terbit');
-        $newRecord->isbn= $request->input('isbn');
-        $newRecord->buku_baik = $request->input('buku_baik');
-        $newRecord->buku_rusak = $request->input('buku_rusak');
+        $newRecord = new Peminjaman();
+        $newRecord->judul_buku_id = $request->input('judul_buku_id');
+        $newRecord->nama_anggota = $request->input('nama_anggota');
+        $newRecord->tanggal_peminjaman = $request->input('tanggal_peminjaman');
+        $newRecord->tanggal_pengembalian = $request->input('tanggal_pengembalian');
+        $newRecord->kondisi_buku_saat_dipinjam = $request->input('kondisi_buku_saat_dipinjam');
+        $newRecord->kondisi_buku_saat_dikembalikan = $request->input('kondisi_buku_saat_dikembalikan');
+        $newRecord->denda = $request->input('denda');
         $newRecord->save();
+
 
         return response()->json([
             'status' => true,
             'message' => 'Data berhasil ditambahkan',
-            'data' => $newRecord->load('author')
+            'data' => $newRecord
         ], 200);
     }
 }

@@ -11,10 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('authors', function (Blueprint $table) {
+        Schema::create('penerbit', function (Blueprint $table) {
             $table->id();
-            $table->string('name_author');
-            $table->string('address');
+            $table->string('kode_penerbit');
+            $table->string('nama_penerbit');
+            $table->string('verf_penerbit');
             $table->timestamps();
         });
     }
@@ -24,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('authors');
+        Schema::dropIfExists('penerbit');
     }
 };

@@ -5,6 +5,8 @@ use App\Http\Controllers\Api\BooksController;
 use App\Http\Controllers\api\CategoryController;
 use App\Http\Controllers\Api\LoginController;
 use App\Http\Controllers\Api\LogoutController;
+use App\Http\Controllers\Api\PeminjamanController;
+use App\Http\Controllers\api\UserController;
 use App\Http\Controllers\TestingController;
 use App\Models\Author;
 use App\Models\Category;
@@ -26,9 +28,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('books/all', [BooksController::class, 'index']);
+Route::get('books', [BooksController::class, 'index']);
 Route::get('books/{id}', [BooksController::class, 'show']);
-Route::get('books', [BooksController::class, 'book']);
+Route::get('booksjhhuuh', [BooksController::class, 'book']);
 Route::post('books/create', [BooksController::class, 'create']);
 Route::post('books/create/all', [BooksController::class, 'store']);
 Route::put('books/update/{id}', [BooksController::class, 'update']);
@@ -45,6 +47,18 @@ Route::get('category/{id}',[CategoryController::class, 'show']);
 Route::post('category/create', [CategoryController::class, 'store']);
 Route::put('category/update/{id}', [CategoryController::class, 'update']);
 Route::delete('category/delete/{id}', [CategoryController::class, 'destroy']);
+
+Route::get('anggota',[UserController::class, 'index']);
+Route::post('anggota/create', [UserController::class, 'store']);
+Route::get('anggota/{id}',[UserController::class, 'show']);
+Route::put('anggota/update/{id}', [UserController::class, 'update']);
+Route::delete('anggota/delete/{id}', [UserController::class, 'destroy']);
+
+Route::get('peminjaman',[PeminjamanController::class, 'index']);
+Route::post('peminjaman/create', [PeminjamanController::class, 'create']);
+Route::get('anggota/{id}',[UserController::class, 'show']);
+Route::put('anggota/update/{id}', [UserController::class, 'update']);
+Route::delete('anggota/delete/{id}', [UserController::class, 'destroy']);
 
 Route::get('testing', [TestingController::class, 'index']);
 

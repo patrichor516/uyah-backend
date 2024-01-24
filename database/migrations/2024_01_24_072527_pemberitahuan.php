@@ -11,10 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('categories', function (Blueprint $table) {
+        Schema::create('pemberitahuan', function (Blueprint $table) {
             $table->id();
-            $table->string('kode_kategori');
-            $table->string('name_category');
+            $table->string('isi_pemberitahuan');
+            $table->string('level_user');
+            $table->string('status');
             $table->timestamps();
         });
     }
@@ -24,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('categories');
+        //
     }
 };

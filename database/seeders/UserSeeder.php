@@ -16,18 +16,32 @@ class UserSeeder extends Seeder
     {
         DB::table('users')->insert(
             [
-                'name' => 'user',
-                'email' => 'user@gmail.com',
-                'password' => Hash::make('user'),
+                'kode_user' => 'AP0001',
+                'nis' => '12345',
+                'fullname' => 'surya pradipta',
+                'username' => 'surya',
+                'password' => Hash::make('surya'),
+                'kelas' => 'XII-PPLG-1',
+                'alamat' => 'jln batu no 3',
+                'verif' => 'verif',
                 'role_id' => 1,
+                'join_date' => '5-1-2016',
+                'terakhir_login' => '8-9-2024',
             ]
         );
         DB::table('users')->insert(
             [
-                'name' => 'admin',
-                'email' => 'admin@gmail.com',
-                'password' => Hash::make('admin'),
-                'role_id' => 2,
+                'kode_user' => 'AP0001',
+                'nis' => '12345',
+                'fullname' => 'surya pradipta',
+                'username' => 'mansur',
+                'password' => Hash::make('mansur'),
+                'kelas' => 'XII-PPLG-1',
+                'alamat' => 'jln batu no 3',
+                'verif' => 'verif',
+                'role_id' => 1,
+                'join_date' => '5-1-2016',
+                'terakhir_login' => '8-9-2024',
             ]
         );
     }

@@ -13,7 +13,7 @@ class LoginController extends Controller
     public function __invoke(Request $request)
     {
         $validator = validator::make($request->all(),[
-            'email' => 'required',
+            'username' => 'required',
             'password' => 'required'
         ]);
 
@@ -21,7 +21,7 @@ class LoginController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
-        $credentials = $request->only('email', 'password');
+        $credentials = $request->only('username', 'password');
 
         if (!$token = JWTAuth::attempt($credentials)) {
             return response()->json([

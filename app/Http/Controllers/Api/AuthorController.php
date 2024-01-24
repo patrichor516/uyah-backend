@@ -27,8 +27,9 @@ class AuthorController extends Controller
     {
 
         $newRecord = new Author();
-        $newRecord->name_author = $request->input('name_author');
-        $newRecord->address = $request->input('address');
+        $newRecord->kode_penerbit = $request->input('kode_penerbit');
+        $newRecord->nama_penerbit = $request->input('nama_penerbit');
+        $newRecord->verf_penerbit = $request->input('verf_penerbit');
         
 
         $newRecord->save();
